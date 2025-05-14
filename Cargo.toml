@@ -1,0 +1,12 @@
+[package]
+name = "hello-rocket"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+dotenv = "0.15"
+alloy = { version = "1.0.1", features = ["full"] }
+rocket = "0.5.1"
+ethers = { version = "2.0", features = ["ws"] }
+tokio = "1.45.0"
+eyre = "0.6.12"
