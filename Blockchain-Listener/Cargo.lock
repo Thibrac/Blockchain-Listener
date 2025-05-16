@@ -55,9 +55,9 @@ checksum = "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923"
 
 [[package]]
 name = "alloy"
-version = "1.0.1"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c47941be7b270d671841b0cf5e94e05fc358e0b79c88e68bc1ad08dc066be3f"
+checksum = "e5b45df75b46444e1b884586270387fa57c8d6fb362141dbc54a232960f9c233"
 dependencies = [
  "alloy-consensus",
  "alloy-contract",
@@ -2616,6 +2616,7 @@ dependencies = [
  "ethers",
  "eyre",
  "rocket",
+ "serde",
  "tokio",
 ]
 
@@ -4354,6 +4355,7 @@ dependencies = [
  "rocket_codegen",
  "rocket_http",
  "serde",
+ "serde_json",
  "state",
  "tempfile",
  "time",

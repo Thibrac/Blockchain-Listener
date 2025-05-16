@@ -1,26 +1,16 @@
 #[macro_use]
 extern crate rocket;
+
+mod blockdata;
+mod routes;
+
+use blockdata::{CurrentBlockData, SharedBlockData};
 use ethers::prelude::*;
+use routes::{data, health};
 use std::env;
 use std::sync::{Arc, Mutex};
 
-#[derive(Clone)]
-struct BlockInfos {
-    block_number: u64,
-    tx_count: usize,
-}
-
-#[get("/data")]
-fn data(share_data: &rocket::State<Arc<Mutex<BlockInfos>>>) -> String {
-    let data = share_data.lock().unwrap();
-
-    format!(
-        "Dernier block : [{}] avec {}txs",
-        data.block_number, data.tx_count
-    )
-}
-
-async fn eth_listener(share_data: Arc<Mutex<BlockInfos>>) -> eyre::Result<()> {
+async fn eth_listener(share_data: SharedBlockData) -> eyre::Result<()> {
     let url = env::var("ALCHEMY_URL")?;
     let provider = Provider::<Ws>::connect(url).await?;
     let mut stream = provider.subscribe_blocks().await?;
@@ -43,20 +33,21 @@ async fn eth_listener(share_data: Arc<Mutex<BlockInfos>>) -> eyre::Result<()> {
 #[rocket::main]
 async fn main() -> eyre::Result<()> {
     dotenv::dotenv().ok();
-    let data = Arc::new(Mutex::new(BlockInfos {
+    let current_block_data = Arc::new(Mutex::new(CurrentBlockData {
         block_number: 0,
         tx_count: 0,
     }));
 
-    let share_data = Arc::clone(&data);
+    let share_data = Arc::clone(&current_block_data);
     tokio::spawn(async {
         if let Err(err) = eth_listener(share_data).await {
             eprintln!("❌ eth_listener error: {:?}", err);
         }
     });
     rocket::build()
-        .manage(data)
-        .mount("/", routes![data])
+        .manage(current_block_data)
+        .mount("/health", routes![health])
+        .mount("/data", routes![data])
         .launch()
         .await?;
     Ok(())
