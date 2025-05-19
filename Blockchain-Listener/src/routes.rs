@@ -2,7 +2,7 @@ use crate::{
     SharedBlockData,
     blockdata::{CurrentBlockData, HealthStatus},
 };
-use rocket::serde::{Serialize, json::Json};
+use rocket::serde::json::Json;
 
 #[get("/")]
 pub fn data(share_data: &rocket::State<SharedBlockData>) -> Json<CurrentBlockData> {
